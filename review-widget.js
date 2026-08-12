@@ -19,7 +19,7 @@
 
 {
       name: "Rayne Phillips",
-      text: "TLDR: BOOK HER!!!!!!! Choosing Hannah and Corey was the BEST wedding decision we made! From our very first shoot with them, our engagement photos, we instantly loved them both. Our photos are simply incredible, but you can see that for yourself!! They captured the joy, the emotion, the tiny moments we didn't even realize were happening, and the feeling of the entire weekend in a way that I don't think anyone else could have. We hired the best photographers on the planet, but more importantly, we gained friends.",
+      text: "TLDR: BOOK HER!!!!!!! Choosing Hannah and Corey was the BEST wedding decision we made. Our photos are simply incredible, but you can see that for yourself! They captured the joy, the emotion, the tiny moments we didn't even realize were happening, and the feeling of the entire weekend in a way that I don't think anyone else could have. We hired the best photographers on the planet, but more importantly, we gained friends.",
       rating: 5,
       avatar: null
     },
@@ -57,7 +57,7 @@
   var CONFIG = {
     position: "bottom-left", // "bottom-left" | "bottom-right"
     firstDelayMs: 3000, // wait before the first card appears
-    visibleMs: 6000, // how long each card stays on screen
+    visibleMs: 4000, // how long each card stays on screen
     gapMs: 4000, // pause between one card leaving and the next arriving
     shuffle: true, // randomize order instead of using list order
     hideOnMobile: false, // set true to hide under 480px wide
