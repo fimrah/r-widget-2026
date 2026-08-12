@@ -28,8 +28,8 @@
       name: "Kat Fleckenstein",
       text: "I cannot recommend Hannah and her team highly enough. She is organized, responsive, and deeply attentive to every detail, but it is her presence that truly sets her apart. On the day itself, she was indispensable. Hannah has a rare gift for knowing exactly how to make you feel comfortable and at ease...",
       rating: 5,
-      avatar: null // e.g. "https://yoursite.com/images/jennifer.jpg",
-      showGoogle: false
+      showGoogle: false,
+      avatar: null // e.g. "https://yoursite.com/images/jennifer.jpg"
     },
 
     {
