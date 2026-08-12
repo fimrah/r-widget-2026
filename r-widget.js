@@ -36,7 +36,7 @@
       rating: 5,
       avatar: null
     },
-   
+
     {
       name: "Ashley Kim",
       text: "Hannah is a true professional with great energy! I'm impressed by the quality, variety, and intentionality of our wedding photos. Our guests were impressed too, and some even asked for her details for their future events.",
@@ -168,6 +168,10 @@
     if (review.avatar) {
       avatarEl.style.background = "transparent";
       avatarEl.innerHTML = '<img src="' + review.avatar + '" alt="">';
+      avatarEl.querySelector("img").addEventListener("error", function () {
+        avatarEl.style.background = colorForName(review.name);
+        avatarEl.innerHTML = initials(review.name);
+      });
     } else {
       avatarEl.style.background = colorForName(review.name);
       avatarEl.innerHTML = initials(review.name);
