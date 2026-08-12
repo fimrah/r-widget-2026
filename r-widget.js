@@ -28,7 +28,8 @@
       name: "Kat Fleckenstein",
       text: "I cannot recommend Hannah and her team highly enough. She is organized, responsive, and deeply attentive to every detail, but it is her presence that truly sets her apart. On the day itself, she was indispensable. Hannah has a rare gift for knowing exactly how to make you feel comfortable and at ease...",
       rating: 5,
-      avatar: null // e.g. "https://yoursite.com/images/jennifer.jpg"
+      avatar: null // e.g. "https://yoursite.com/images/jennifer.jpg",
+      showGoogle: false
     },
 
     {
@@ -42,14 +43,13 @@
       text: "I truly can't recommend Hannah enough!! She approached our day with such intentionality, capturing every moment filled with love and authenticity. Forever will cherish these photos and the memories she helped keep!",
       rating: 5,
       avatar: 'https://cdn.jsdelivr.net/gh/fimrah/r-widget-2026@main/hannahgbrenner.jpg'
-    }
-        },
-        {
+    },
+    {
       name: "Kayla Callaway",
       text: "Hannah has a keen eye for capturing beautiful, organic photos during some of the most important moments of your life. We worked with her for our engagement session and wedding and she took excellent care of us, striking a balance to be both encouraging and also creating a space for my husband and I to stay authentic to who we are as a couple.",
       rating: 5,
       avatar: null
-
+    }
   ];
   
 
@@ -147,7 +147,7 @@
       '<p class="rvw-name" id="rvw-name"></p>' +
       '<p class="rvw-text" id="rvw-text"></p>' +
       '<div class="rvw-meta">' +
-      googleGSVG() +
+      '<span id="rvw-google">' + googleGSVG() + '</span>' +
       '<span class="rvw-stars" id="rvw-stars"></span>' +
       "</div></div></div>";
     document.body.appendChild(el);
@@ -178,6 +178,7 @@
       avatarEl.style.background = colorForName(review.name);
       avatarEl.innerHTML = initials(review.name);
     }
+    el.querySelector("#rvw-google").style.display = review.showGoogle === false ? "none" : "";
     el.querySelector("#rvw-name").textContent = review.name;
     el.querySelector("#rvw-text").textContent = '"' + review.text + '"';
     var stars = "";
