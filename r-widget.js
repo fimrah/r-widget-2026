@@ -34,7 +34,7 @@
       name: "Kayla Callaway",
       text: "Hannah has a keen eye for capturing beautiful, organic photos during some of the most important moments of your life. We worked with her for our engagement session and wedding and she took excellent care of us, striking a balance to be both encouraging and also creating a space for my husband and I to stay authentic to who we are as a couple.",
       rating: 5,
-      avatar: null
+      avatar: 'https://cdn.jsdelivr.net/gh/fimrah/r-widget-2026@main/kaymcallaway-avatar.jpg'
     },
 
     {
