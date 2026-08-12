@@ -57,9 +57,9 @@
   // ------------------------------------------------------------------
   var CONFIG = {
     position: "bottom-left", // "bottom-left" | "bottom-right"
-    firstDelayMs: 3000, // wait before the first card appears
-    visibleMs: 4000, // how long each card stays on screen
-    gapMs: 4000, // pause between one card leaving and the next arriving
+    firstDelayMs: 4000, // wait before the first card appears
+    visibleMs: 9500, // how long each card stays on screen
+    gapMs: 3500, // pause between one card leaving and the next arriving
     shuffle: false, // randomize order instead of using list order
     hideOnMobile: false, // set true to hide under 480px wide
     dismissRemembersFor: "session" // "session" | "always" | "none"
