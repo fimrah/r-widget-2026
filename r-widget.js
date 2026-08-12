@@ -47,7 +47,7 @@
       name: "Hannah Beard",
       text: "I truly can't recommend Hannah enough!! She approached our day with such intentionality, capturing every moment filled with love and authenticity. Forever will cherish these photos and the memories she helped keep!",
       rating: 5,
-      avatar: null
+      avatar: 'https://cdn.jsdelivr.net/gh/fimrah/r-widget-2026@main/hannahgbrenner.jpg'
     }
   ];
 
