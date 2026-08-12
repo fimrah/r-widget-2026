@@ -30,12 +30,6 @@
       rating: 5,
       avatar: null // e.g. "https://yoursite.com/images/jennifer.jpg"
     },
-    {
-      name: "Kayla Callaway",
-      text: "Hannah has a keen eye for capturing beautiful, organic photos during some of the most important moments of your life. We worked with her for our engagement session and wedding and she took excellent care of us, striking a balance to be both encouraging and also creating a space for my husband and I to stay authentic to who we are as a couple.",
-      rating: 5,
-      avatar: null
-    },
 
     {
       name: "Ashley Kim",
@@ -49,7 +43,15 @@
       rating: 5,
       avatar: 'https://cdn.jsdelivr.net/gh/fimrah/r-widget-2026@main/hannahgbrenner.jpg'
     }
+        },
+        {
+      name: "Kayla Callaway",
+      text: "Hannah has a keen eye for capturing beautiful, organic photos during some of the most important moments of your life. We worked with her for our engagement session and wedding and she took excellent care of us, striking a balance to be both encouraging and also creating a space for my husband and I to stay authentic to who we are as a couple.",
+      rating: 5,
+      avatar: null
+
   ];
+  
 
   // ------------------------------------------------------------------
   // 2. SETTINGS
@@ -59,7 +61,7 @@
     firstDelayMs: 3000, // wait before the first card appears
     visibleMs: 4000, // how long each card stays on screen
     gapMs: 4000, // pause between one card leaving and the next arriving
-    shuffle: true, // randomize order instead of using list order
+    shuffle: false, // randomize order instead of using list order
     hideOnMobile: false, // set true to hide under 480px wide
     dismissRemembersFor: "session" // "session" | "always" | "none"
   };
