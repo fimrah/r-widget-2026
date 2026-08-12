@@ -26,7 +26,7 @@
 
     {
       name: "Kat Fleckenstein",
-      text: "I cannot recommend Hannah and her team highly enough. She is organized, responsive, and deeply attentive to every detail, but it is her presence that truly sets her apart. On the day itself, she was indispensable. Hannah has a rare gift for knowing exactly how to make you feel comfortable and at ease.",
+      text: "I cannot recommend Hannah and her team highly enough. She is organized, responsive, and deeply attentive to every detail, but it is her presence that truly sets her apart. On the day itself, she was indispensable. Hannah has a rare gift for knowing exactly how to make you feel comfortable and at ease...",
       rating: 5,
       avatar: null // e.g. "https://yoursite.com/images/jennifer.jpg"
     },
@@ -34,12 +34,12 @@
       name: "Kayla Callaway",
       text: "Hannah has a keen eye for capturing beautiful, organic photos during some of the most important moments of your life. We worked with her for our engagement session and wedding and she took excellent care of us, striking a balance to be both encouraging and also creating a space for my husband and I to stay authentic to who we are as a couple.",
       rating: 5,
-      avatar: 'https://cdn.jsdelivr.net/gh/fimrah/r-widget-2026@main/kaymcallaway-avatar.jpg'
+      avatar: null
     },
 
     {
       name: "Ashley Kim",
-      text: "Hannah is a true professional with great energy! I'm impressed by the quality, variety, and intentionality of our wedding photos. Our guests were impressed too, and some even asked for her details for their future events.",
+      text: "Hannah is a true professional with great energy! I'm impressed by the quality, variety, and intentionality of our wedding photos. Our guests were impressed too, and some even asked for her details for their future events...",
       rating: 5,
       avatar: null
     },
