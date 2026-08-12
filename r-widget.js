@@ -21,7 +21,7 @@
       name: "Rayne Phillips",
       text: "TLDR: BOOK HER!!!!!!! Choosing Hannah and Corey was the BEST wedding decision we made. Our photos are simply incredible, but you can see that for yourself! They captured the joy, the emotion, the tiny moments we didn't even realize were happening, and the feeling of the entire weekend in a way that I don't think anyone else could have. We hired the best photographers on the planet, but more importantly, we gained friends.",
       rating: 5,
-      avatar: null
+      avatar: 'https://cdn.jsdelivr.net/gh/fimrah/r-widget-2026@main/RPJ.jpg'
     },
 
     {
