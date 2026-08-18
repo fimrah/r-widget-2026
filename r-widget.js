@@ -9,28 +9,37 @@
  */
 (function () {
   "use strict";
-
+ 
   // ------------------------------------------------------------------
   // 1. YOUR REVIEWS — add/remove/reorder as many as you like (5-10 is a
   //    good range). "avatar" is optional: leave it out and the widget
   //    will show a colored circle with the reviewer's first initial.
+  //
+  //    Optional per-review flags:
+  //      showGoogle: false  -> hides the Google "G" icon on that card
+  //      showRating: false  -> hides the star row on that card
+  //    Both default to true (shown) when omitted. Use these for
+  //    testimonials that weren't posted on Google (e.g. sent by email)
+  //    so the widget doesn't imply they were.
   // ------------------------------------------------------------------
   var REVIEWS = [
-
+ 
 {
       name: "Rayne Phillips",
       text: "TLDR: BOOK HER!!!!!!! Choosing Hannah and Corey was the BEST wedding decision we made. Our photos are simply incredible, but you can see that for yourself! They captured the joy, the emotion, the tiny moments we didn't even realize were happening, and the feeling of the entire weekend in a way that I don't think anyone else could have. We hired the best photographers on the planet, but more importantly, we gained friends.",
       rating: 5,
       avatar: 'https://cdn.jsdelivr.net/gh/fimrah/r-widget-2026@main/RPJ.jpg'
     },
-
+ 
     {
       name: "Kat Fleckenstein",
       text: "I cannot recommend Hannah and her team highly enough. She is organized, responsive, and deeply attentive to every detail, but it is her presence that truly sets her apart. On the day itself, she was indispensable. Hannah has a rare gift for knowing exactly how to make you feel comfortable and at ease...",
       rating: 5,
-      avatar: null // e.g. "https://yoursite.com/images/jennifer.jpg"
+      avatar: null, // e.g. "https://yoursite.com/images/jennifer.jpg"
+      showGoogle: false, // sent via email, not posted on Google
+      showRating: false  // so no Google star rating is implied
     },
-
+ 
     {
       name: "Ashley Kim",
       text: "Hannah is a true professional with great energy! I'm impressed by the quality, variety, and intentionality of our wedding photos. Our guests were impressed too, and some even asked for her details for their future events...",
@@ -50,8 +59,8 @@
       avatar: null
     }
   ];
-  
-
+ 
+ 
   // ------------------------------------------------------------------
   // 2. SETTINGS
   // ------------------------------------------------------------------
@@ -64,35 +73,35 @@
     hideOnMobile: false, // set true to hide under 480px wide
     dismissRemembersFor: "session" // "session" | "always" | "none"
   };
-
+ 
   // ------------------------------------------------------------------
   // Implementation — no need to edit below this line.
   // ------------------------------------------------------------------
   if (window.__reviewWidgetLoaded) return;
   window.__reviewWidgetLoaded = true;
-
+ 
   var STORAGE_KEY = "reviewWidgetDismissed";
   try {
     if (CONFIG.dismissRemembersFor === "always" && localStorage.getItem(STORAGE_KEY)) return;
     if (CONFIG.dismissRemembersFor === "session" && sessionStorage.getItem(STORAGE_KEY)) return;
   } catch (e) {}
-
+ 
   var AVATAR_COLORS = ["#E2622B", "#2B6CE2", "#2BA84A", "#9B2BE2", "#E2B02B", "#2BC4C4"];
-
+ 
   function colorForName(name) {
     var hash = 0;
     for (var i = 0; i < name.length; i++) hash = name.charCodeAt(i) + ((hash << 5) - hash);
     return AVATAR_COLORS[Math.abs(hash) % AVATAR_COLORS.length];
   }
-
+ 
   function initials(name) {
     return (name.trim().charAt(0) || "?").toUpperCase();
   }
-
+ 
   function starSVG() {
     return '<svg viewBox="0 0 20 20" width="14" height="14" fill="#FBBC04" aria-hidden="true"><path d="M10 1.5l2.6 5.6 6.1.6-4.6 4.2 1.3 6-5.4-3.1-5.4 3.1 1.3-6-4.6-4.2 6.1-.6z"/></svg>';
   }
-
+ 
   function googleGSVG() {
     return (
       '<svg viewBox="0 0 48 48" width="16" height="16" aria-hidden="true">' +
@@ -103,7 +112,7 @@
       "</svg>"
     );
   }
-
+ 
   var css =
     "#rvw-widget{box-sizing:border-box;position:fixed;z-index:2147483000;width:320px;max-width:calc(100vw - 32px);" +
     "font-family:-apple-system,BlinkMacSystemFont,'Segoe UI',Roboto,Helvetica,Arial,sans-serif;" +
@@ -127,11 +136,11 @@
     "#rvw-widget .rvw-meta{display:flex;align-items:center;gap:6px;}" +
     "#rvw-widget .rvw-stars{display:inline-flex;gap:1px;}" +
     "@media (max-width:480px){#rvw-widget.rvw-hide-mobile{display:none!important;}}";
-
+ 
   var styleTag = document.createElement("style");
   styleTag.textContent = css;
   document.head.appendChild(styleTag);
-
+ 
   function buildWidget() {
     var el = document.createElement("div");
     el.id = "rvw-widget";
@@ -145,12 +154,12 @@
       '<div class="rvw-body">' +
       '<p class="rvw-name" id="rvw-name"></p>' +
       '<p class="rvw-text" id="rvw-text"></p>' +
-      '<div class="rvw-meta">' +
+      '<div class="rvw-meta" id="rvw-meta">' +
       '<span id="rvw-google">' + googleGSVG() + '</span>' +
       '<span class="rvw-stars" id="rvw-stars"></span>' +
       "</div></div></div>";
     document.body.appendChild(el);
-
+ 
     el.querySelector(".rvw-close").addEventListener("click", function () {
       el.classList.remove("rvw-visible");
       stopped = true;
@@ -160,10 +169,10 @@
         if (CONFIG.dismissRemembersFor === "session") sessionStorage.setItem(STORAGE_KEY, "1");
       } catch (e) {}
     });
-
+ 
     return el;
   }
-
+ 
   function fillCard(el, review) {
     var avatarEl = el.querySelector("#rvw-avatar");
     if (review.avatar) {
@@ -177,14 +186,34 @@
       avatarEl.style.background = colorForName(review.name);
       avatarEl.innerHTML = initials(review.name);
     }
-    el.querySelector("#rvw-google").style.display = review.showGoogle === false ? "none" : "";
+ 
     el.querySelector("#rvw-name").textContent = review.name;
     el.querySelector("#rvw-text").textContent = '"' + review.text + '"';
-    var stars = "";
-    for (var i = 0; i < (review.rating || 5); i++) stars += starSVG();
-    el.querySelector("#rvw-stars").innerHTML = stars;
+ 
+    // Per-review flags: showGoogle / showRating default to true (shown)
+    // unless explicitly set to false on that review object.
+    var showGoogle = review.showGoogle !== false;
+    var showRating = review.showRating !== false;
+ 
+    var googleEl = el.querySelector("#rvw-google");
+    googleEl.style.display = showGoogle ? "" : "none";
+ 
+    var starsEl = el.querySelector("#rvw-stars");
+    if (showRating) {
+      var stars = "";
+      for (var i = 0; i < (review.rating || 5); i++) stars += starSVG();
+      starsEl.innerHTML = stars;
+      starsEl.style.display = "";
+    } else {
+      starsEl.innerHTML = "";
+      starsEl.style.display = "none";
+    }
+ 
+    // Hide the whole meta row if neither badge is shown, so there's no
+    // empty gap under the review text.
+    el.querySelector("#rvw-meta").style.display = (showGoogle || showRating) ? "" : "none";
   }
-
+ 
   var order = REVIEWS.slice();
   if (CONFIG.shuffle) {
     for (var i = order.length - 1; i > 0; i--) {
@@ -194,33 +223,33 @@
       order[j] = tmp;
     }
   }
-
+ 
   var idx = 0;
   var stopped = false;
   var timer = null;
   var widgetEl = null;
-
+ 
   function cycle() {
     if (stopped || !order.length) return;
     if (!widgetEl) widgetEl = buildWidget();
-
+ 
     fillCard(widgetEl, order[idx % order.length]);
     idx++;
-
+ 
     requestAnimationFrame(function () {
       widgetEl.classList.add("rvw-visible");
     });
-
+ 
     timer = setTimeout(function () {
       widgetEl.classList.remove("rvw-visible");
       timer = setTimeout(cycle, CONFIG.gapMs);
     }, CONFIG.visibleMs);
   }
-
+ 
   function start() {
     timer = setTimeout(cycle, CONFIG.firstDelayMs);
   }
-
+ 
   if (document.readyState === "complete" || document.readyState === "interactive") {
     start();
   } else {
