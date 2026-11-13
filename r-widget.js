@@ -1,5 +1,5 @@
 /*!
- * Review Widget — floating, cycling testimonial card.
+ * Review Widget — floating, cycling testimonial card with arrow navigation.
  * Paste this whole <script> block into your site's <head> (or right
  * before </body>, which is friendlier to page-load speed).
  *
@@ -9,7 +9,7 @@
  */
 (function () {
   "use strict";
- 
+
   // ------------------------------------------------------------------
   // 1. YOUR REVIEWS — add/remove/reorder as many as you like (5-10 is a
   //    good range). "avatar" is optional: leave it out and the widget
@@ -23,21 +23,21 @@
   //    so the widget doesn't imply they were.
   // ------------------------------------------------------------------
   var REVIEWS = [
- 
+
 {
       name: "Rayne Phillips",
       text: "TLDR: BOOK HER!!!!!!! Choosing Hannah and Corey was the BEST wedding decision we made. Our photos are simply incredible, but you can see that for yourself! They captured the joy, the emotion, the tiny moments we didn't even realize were happening, and the feeling of the entire weekend in a way that I don't think anyone else could have. We hired the best photographers on the planet, but more importantly, we gained friends.",
       rating: 5,
       avatar: 'https://cdn.jsdelivr.net/gh/fimrah/r-widget-2026@main/RPJ.jpg'
     },
- 
+
     {
       name: "Kat Fleckenstein",
       text: "I cannot recommend Hannah and her team highly enough. She is organized, responsive, and deeply attentive to every detail, but it is her presence that truly sets her apart. On the day itself, she was indispensable. Hannah has a rare gift for knowing exactly how to make you feel comfortable and at ease...",
       rating: 5,
       avatar: null, // e.g. "https://yoursite.com/images/jennifer.jpg"
     },
- 
+
     {
       name: "Ashley Kim",
       text: "Hannah is a true professional with great energy! I'm impressed by the quality, variety, and intentionality of our wedding photos. Our guests were impressed too, and some even asked for her details for their future events...",
@@ -57,49 +57,52 @@
       avatar: null
     }
   ];
- 
- 
+
+
   // ------------------------------------------------------------------
   // 2. SETTINGS
   // ------------------------------------------------------------------
   var CONFIG = {
     position: "bottom-left", // "bottom-left" | "bottom-right"
     firstDelayMs: 4000, // wait before the first card appears
-    visibleMs: 15000, // how long each card stays on screen
+    visibleMs: 15000, // how long each card stays on screen before auto-advancing
     gapMs: 4000, // pause between one card leaving and the next arriving
     shuffle: false, // do not randomize order instead of using list order
     hideOnMobile: false, // set true to hide under 480px wide
-    dismissRemembersFor: "session" // "session" | "always" | "none"
+    dismissRemembersFor: "session", // "session" | "always" | "none"
+    showArrows: true // show prev/next arrows so visitors can navigate manually
   };
- 
+
   // ------------------------------------------------------------------
   // Implementation — no need to edit below this line.
   // ------------------------------------------------------------------
   if (window.__reviewWidgetLoaded) return;
   window.__reviewWidgetLoaded = true;
- 
+
   var STORAGE_KEY = "reviewWidgetDismissed";
   try {
     if (CONFIG.dismissRemembersFor === "always" && localStorage.getItem(STORAGE_KEY)) return;
     if (CONFIG.dismissRemembersFor === "session" && sessionStorage.getItem(STORAGE_KEY)) return;
   } catch (e) {}
- 
+
+  var TRANSITION_MS = 350; // keep in sync with the opacity/transform transition in the CSS below
+
   var AVATAR_COLORS = ["#E2622B", "#2B6CE2", "#2BA84A", "#9B2BE2", "#E2B02B", "#2BC4C4"];
- 
+
   function colorForName(name) {
     var hash = 0;
     for (var i = 0; i < name.length; i++) hash = name.charCodeAt(i) + ((hash << 5) - hash);
     return AVATAR_COLORS[Math.abs(hash) % AVATAR_COLORS.length];
   }
- 
+
   function initials(name) {
     return (name.trim().charAt(0) || "?").toUpperCase();
   }
- 
+
   function starSVG() {
     return '<svg viewBox="0 0 20 20" width="14" height="14" fill="#FBBC04" aria-hidden="true"><path d="M10 1.5l2.6 5.6 6.1.6-4.6 4.2 1.3 6-5.4-3.1-5.4 3.1 1.3-6-4.6-4.2 6.1-.6z"/></svg>';
   }
- 
+
   function googleGSVG() {
     return (
       '<svg viewBox="0 0 48 48" width="16" height="16" aria-hidden="true">' +
@@ -110,7 +113,15 @@
       "</svg>"
     );
   }
- 
+
+  function chevronSVG(dir) {
+    var d = dir === "left" ? "M12.5 15.5l-5-5.5 5-5.5" : "M7.5 15.5l5-5.5-5-5.5";
+    return (
+      '<svg viewBox="0 0 20 20" fill="none" stroke="currentColor" stroke-width="2" ' +
+      'stroke-linecap="round" stroke-linejoin="round" aria-hidden="true"><path d="' + d + '"/></svg>'
+    );
+  }
+
   var css =
     "#rvw-widget{box-sizing:border-box;position:fixed;z-index:2147483000;width:320px;max-width:calc(100vw - 32px);" +
     "font-family:-apple-system,BlinkMacSystemFont,'Segoe UI',Roboto,Helvetica,Arial,sans-serif;" +
@@ -131,20 +142,34 @@
     "#rvw-widget .rvw-body{min-width:0;}" +
     "#rvw-widget .rvw-name{font-weight:700;font-size:14.5px;color:#1a1a1a;margin:0 0 4px;}" +
     "#rvw-widget .rvw-text{font-style:italic;font-size:13.5px;line-height:1.4;color:#3c3c3c;margin:0 0 8px;}" +
-    "#rvw-widget .rvw-meta{display:flex;align-items:center;gap:6px;}" +
+    "#rvw-widget .rvw-meta{display:flex;align-items:center;justify-content:space-between;gap:10px;min-height:24px;}" +
+    "#rvw-widget .rvw-meta.rvw-meta-nobadges{justify-content:flex-start;}" +
+    "#rvw-widget .rvw-badges{display:flex;align-items:center;gap:6px;}" +
     "#rvw-widget .rvw-stars{display:inline-flex;gap:1px;}" +
+    "#rvw-widget .rvw-arrow{flex:0 0 auto;width:24px;height:24px;border-radius:50%;border:none;" +
+    "background:#f1f3f4;display:flex;align-items:center;justify-content:center;cursor:pointer;" +
+    "color:#5f6368;padding:0;}" +
+    "#rvw-widget .rvw-arrow:hover{background:#e8eaed;color:#1a1a1a;}" +
+    "#rvw-widget .rvw-arrow + .rvw-arrow{margin-left:0;}" +
+    "#rvw-widget .rvw-meta-nobadges .rvw-arrow-next{margin-left:6px;}" +
+    "#rvw-widget .rvw-arrow svg{width:12px;height:12px;}" +
     "@media (max-width:480px){#rvw-widget.rvw-hide-mobile{display:none!important;}}";
- 
+
   var styleTag = document.createElement("style");
   styleTag.textContent = css;
   document.head.appendChild(styleTag);
- 
+
   function buildWidget() {
     var el = document.createElement("div");
     el.id = "rvw-widget";
     el.className = "rvw-" + CONFIG.position + (CONFIG.hideOnMobile ? " rvw-hide-mobile" : "");
     el.setAttribute("role", "status");
     el.setAttribute("aria-live", "polite");
+
+    var showArrows = CONFIG.showArrows && order.length > 1;
+    var prevHtml = showArrows ? '<button class="rvw-arrow rvw-arrow-prev" aria-label="Previous review">' + chevronSVG("left") + "</button>" : "";
+    var nextHtml = showArrows ? '<button class="rvw-arrow rvw-arrow-next" aria-label="Next review">' + chevronSVG("right") + "</button>" : "";
+
     el.innerHTML =
       '<button class="rvw-close" aria-label="Dismiss">&times;</button>' +
       '<div class="rvw-row">' +
@@ -153,11 +178,15 @@
       '<p class="rvw-name" id="rvw-name"></p>' +
       '<p class="rvw-text" id="rvw-text"></p>' +
       '<div class="rvw-meta" id="rvw-meta">' +
+      prevHtml +
+      '<span class="rvw-badges" id="rvw-badges">' +
       '<span id="rvw-google">' + googleGSVG() + '</span>' +
       '<span class="rvw-stars" id="rvw-stars"></span>' +
+      '</span>' +
+      nextHtml +
       "</div></div></div>";
     document.body.appendChild(el);
- 
+
     el.querySelector(".rvw-close").addEventListener("click", function () {
       el.classList.remove("rvw-visible");
       stopped = true;
@@ -167,10 +196,21 @@
         if (CONFIG.dismissRemembersFor === "session") sessionStorage.setItem(STORAGE_KEY, "1");
       } catch (e) {}
     });
- 
+
+    var prevBtn = el.querySelector(".rvw-arrow-prev");
+    var nextBtn = el.querySelector(".rvw-arrow-next");
+    if (prevBtn) prevBtn.addEventListener("click", function (e) {
+      e.stopPropagation();
+      goTo(pos - 1);
+    });
+    if (nextBtn) nextBtn.addEventListener("click", function (e) {
+      e.stopPropagation();
+      goTo(pos + 1);
+    });
+
     return el;
   }
- 
+
   function fillCard(el, review) {
     var avatarEl = el.querySelector("#rvw-avatar");
     if (review.avatar) {
@@ -184,18 +224,18 @@
       avatarEl.style.background = colorForName(review.name);
       avatarEl.innerHTML = initials(review.name);
     }
- 
+
     el.querySelector("#rvw-name").textContent = review.name;
     el.querySelector("#rvw-text").textContent = '"' + review.text + '"';
- 
+
     // Per-review flags: showGoogle / showRating default to true (shown)
     // unless explicitly set to false on that review object.
     var showGoogle = review.showGoogle !== false;
     var showRating = review.showRating !== false;
- 
+
     var googleEl = el.querySelector("#rvw-google");
     googleEl.style.display = showGoogle ? "" : "none";
- 
+
     var starsEl = el.querySelector("#rvw-stars");
     if (showRating) {
       var stars = "";
@@ -206,12 +246,19 @@
       starsEl.innerHTML = "";
       starsEl.style.display = "none";
     }
- 
-    // Hide the whole meta row if neither badge is shown, so there's no
-    // empty gap under the review text.
-    el.querySelector("#rvw-meta").style.display = (showGoogle || showRating) ? "" : "none";
+
+    var metaEl = el.querySelector("#rvw-meta");
+    var badgesEl = el.querySelector("#rvw-badges");
+    var hasBadges = showGoogle || showRating;
+    badgesEl.style.display = hasBadges ? "" : "none";
+    metaEl.classList.toggle("rvw-meta-nobadges", !hasBadges);
+
+    // Hide the whole meta row only if there's nothing left in it at all
+    // (no Google/star badges AND no arrows), so there's no empty gap.
+    var hasArrows = !!el.querySelector(".rvw-arrow");
+    metaEl.style.display = (hasBadges || hasArrows) ? "" : "none";
   }
- 
+
   var order = REVIEWS.slice();
   if (CONFIG.shuffle) {
     for (var i = order.length - 1; i > 0; i--) {
@@ -221,33 +268,63 @@
       order[j] = tmp;
     }
   }
- 
-  var idx = 0;
+
+  var pos = 0; // current position in `order`
   var stopped = false;
   var timer = null;
   var widgetEl = null;
- 
-  function cycle() {
-    if (stopped || !order.length) return;
+
+  function render() {
     if (!widgetEl) widgetEl = buildWidget();
- 
-    fillCard(widgetEl, order[idx % order.length]);
-    idx++;
- 
+    fillCard(widgetEl, order[pos]);
     requestAnimationFrame(function () {
       widgetEl.classList.add("rvw-visible");
     });
- 
+  }
+
+  // After a card has been shown for visibleMs, fade it out, wait gapMs,
+  // then auto-advance to the next one.
+  function scheduleAutoAdvance() {
     timer = setTimeout(function () {
+      if (!widgetEl) return;
       widgetEl.classList.remove("rvw-visible");
-      timer = setTimeout(cycle, CONFIG.gapMs);
+      timer = setTimeout(function () {
+        if (stopped || !order.length) return;
+        pos = (pos + 1) % order.length;
+        render();
+        scheduleAutoAdvance();
+      }, CONFIG.gapMs);
     }, CONFIG.visibleMs);
   }
- 
-  function start() {
-    timer = setTimeout(cycle, CONFIG.firstDelayMs);
+
+  // Manual navigation via the prev/next arrows. Fades the current card
+  // out, swaps in the requested review, fades it back in, then restarts
+  // the normal auto-advance timer (so clicking doesn't fight autoplay).
+  function goTo(newPos) {
+    if (stopped || !order.length) return;
+    clearTimeout(timer);
+    pos = ((newPos % order.length) + order.length) % order.length;
+
+    if (!widgetEl || !widgetEl.classList.contains("rvw-visible")) {
+      render();
+      scheduleAutoAdvance();
+      return;
+    }
+
+    widgetEl.classList.remove("rvw-visible");
+    timer = setTimeout(function () {
+      render();
+      scheduleAutoAdvance();
+    }, TRANSITION_MS);
   }
- 
+
+  function start() {
+    timer = setTimeout(function () {
+      render();
+      scheduleAutoAdvance();
+    }, CONFIG.firstDelayMs);
+  }
+
   if (document.readyState === "complete" || document.readyState === "interactive") {
     start();
   } else {
